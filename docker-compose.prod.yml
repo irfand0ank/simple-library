@@ -6,7 +6,6 @@ services:
   # --------------------------------------
   app:
     image: ${DOCKER_USERNAME}/mylibrary:latest
-    container_name: mylibrary_app
     restart: unless-stopped
     env_file:
       - .env
@@ -21,7 +20,6 @@ services:
   # --------------------------------------
   pgsql:
     image: postgres:15
-    container_name: mylibrary_pgsql
     restart: unless-stopped
     environment:
       POSTGRES_DB: library
@@ -37,7 +35,6 @@ services:
   # --------------------------------------
   redis:
     image: redis:alpine
-    container_name: mylibrary_redis
     restart: unless-stopped
     networks:
       - laravel
@@ -47,7 +44,6 @@ services:
   # --------------------------------------
   nginx:
     image: nginx:alpine
-    container_name: mylibrary_nginx
     restart: unless-stopped
     ports:
       - "8000:80"
