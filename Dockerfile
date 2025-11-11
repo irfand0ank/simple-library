@@ -1,13 +1,27 @@
 # ============================================
 # Stage 1 — Build dependencies
+# ============================================# ============================================
+# Stage 1 — Build PHP dependencies (Composer)
 # ============================================
-FROM composer:2 AS vendor
+FROM php:8.3.2-fpm AS vendor
+
+# Install system dependencies for Composer
+RUN apt-get update && apt-get install -y \
+    git unzip curl zip libpng-dev libjpeg-dev libonig-dev libxml2-dev libzip-dev libicu-dev libpq-dev \
+ && docker-php-ext-configure gd --with-jpeg \
+ && docker-php-ext-install pdo pdo_pgsql mbstring exif pcntl bcmath gd zip intl \
+ && pecl install redis && docker-php-ext-enable redis \
+ && apt-get clean && rm -rf /var/lib/apt/lists/*
+
+# Install Composer manually (to keep PHP version consistent)
+RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 
 WORKDIR /app
 
+# Copy dependency files and install PHP packages
 COPY composer.json composer.lock ./
-RUN composer install --no-dev --prefer-dist --optimize-autoloader --no-interaction --no-progress
-
+RUN composer install --no-dev --prefer-dist --optimize-autoloader --no-interaction --no-progress \
+ && rm -rf /root/.composer/cache
 
 # ============================================
 # Stage 2 — Build frontend assets
