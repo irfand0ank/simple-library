@@ -3,7 +3,11 @@
 namespace Database\Seeders;
 
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
+
+use App\Models\Book;
 use Illuminate\Database\Seeder;
+use App\Models\Borrow;
+use App\Models\Member;
 
 class DatabaseSeeder extends Seeder
 {
@@ -12,11 +16,16 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // \App\Models\User::factory(10)->create();
+        // Get all existing books and members from the database
+        $books = Book::factory(20)->create();
+        $members = Member::factory(10)->create();
 
-        // \App\Models\User::factory()->create([
-        //     'name' => 'Test User',
-        //     'email' => 'test@example.com',
-        // ]);
+        // Each member borrows random books
+        $members->each(function ($member) use ($books) {
+            Borrow::factory(3)->create([
+                'member_id' => $member->id,
+                'book_id' => $books->random()->id,
+            ]);
+        });
     }
 }

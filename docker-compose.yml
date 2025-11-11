@@ -1,0 +1,81 @@
+services:
+    # --------------------------------------
+    # Laravel Application (PHP-FPM)
+    # --------------------------------------
+    app:
+        build:
+            context: .
+            dockerfile: Dockerfile
+        container_name: mylibrary_app
+        restart: unless-stopped
+        volumes:
+            - .:/var/www/html
+        env_file:
+            - .env
+        depends_on:
+            - pgsql
+            - redis
+        ports:
+            - "5173:5173" # 👈 add this line
+        environment:
+            - CHOKIDAR_USEPOLLING=${CHOKIDAR_USEPOLLING:-false}
+
+        networks:
+            - laravel
+
+    # --------------------------------------
+    # PostgreSQL Database
+    # --------------------------------------
+    pgsql:
+        image: postgres:15
+        container_name: mylibrary_pgsql
+        restart: unless-stopped
+        environment:
+            POSTGRES_DB: library
+            POSTGRES_USER: laravel
+            POSTGRES_PASSWORD: secret
+        ports:
+            - "5432:5432"
+        volumes:
+            - pg_data:/var/lib/postgresql/data
+        networks:
+            - laravel
+
+    # --------------------------------------
+    # Redis Cache
+    # --------------------------------------
+    redis:
+        image: redis:alpine
+        container_name: mylibrary_redis
+        restart: unless-stopped
+        ports:
+            - "6379:6379"
+        networks:
+            - laravel
+
+    # --------------------------------------
+    # Nginx Web Server
+    # --------------------------------------
+    nginx:
+        image: nginx:alpine
+        container_name: mylibrary_nginx
+        restart: unless-stopped
+        ports:
+            - "8000:80"
+        volumes:
+            - .:/var/www/html
+            - ./docker/nginx/default.conf:/etc/nginx/conf.d/default.conf
+        depends_on:
+            - app
+        networks:
+            - laravel
+
+# --------------------------------------
+# Volumes and Networks
+# --------------------------------------
+volumes:
+    pg_data:
+
+networks:
+    laravel:
+        driver: bridge
