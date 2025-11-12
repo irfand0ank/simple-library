@@ -35,4 +35,7 @@ RUN composer install --no-interaction --prefer-dist \
  && chmod -R 775 storage bootstrap/cache
 
 EXPOSE 9000
+
+VOLUME /var/www/html
+
 CMD ["php-fpm"]
