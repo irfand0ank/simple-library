@@ -40,6 +40,9 @@ jobs:
           script: |
             cd /var/www/html/my-library
 
+            git fetch origin main
+            git reset --hard origin/main
+
             echo "🔧 Generating .env..."
             cat > .env <<'EOF'
             APP_NAME=Laravel
