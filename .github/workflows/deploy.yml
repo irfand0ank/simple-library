@@ -33,6 +33,12 @@ jobs:
 
       - name: SSH into server and deploy
         uses: appleboy/ssh-action@v1.1.0
+        env:
+          APP_URL: ${{ secrets.APP_URL }}
+          DB_DATABASE: ${{ secrets.DB_DATABASE }}
+          DB_USERNAME: ${{ secrets.DB_USERNAME }}
+          DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+          APP_KEY: ${{ secrets.APP_KEY }}
         with:
           host: ${{ secrets.SERVER_HOST }}
           username: ${{ secrets.SERVER_USER }}
@@ -48,20 +54,19 @@ jobs:
             cat > .env <<EOF
             APP_NAME="My Library"
             APP_ENV=production
-            APP_KEY=
+            APP_KEY=$APP_KEY
             APP_DEBUG=true
-            APP_URL=${{ secrets.APP_URL }}
+            APP_URL=$APP_URL
 
             LOG_CHANNEL=stack
-            LOG_DEPRECATIONS_CHANNEL=null
             LOG_LEVEL=debug
 
             DB_CONNECTION=pgsql
             DB_HOST=pgsql
             DB_PORT=5432
-            DB_DATABASE=${{ secrets.DB_DATABASE }}
-            DB_USERNAME=${{ secrets.DB_USERNAME }}
-            DB_PASSWORD=${{ secrets.DB_PASSWORD }}
+            DB_DATABASE=$DB_DATABASE
+            DB_USERNAME=$DB_USERNAME
+            DB_PASSWORD=$DB_PASSWORD
 
             BROADCAST_DRIVER=log
             CACHE_DRIVER=redis
