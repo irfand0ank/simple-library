@@ -31,9 +31,9 @@ services:
         container_name: mylibrary_pgsql
         restart: unless-stopped
         environment:
-            POSTGRES_DB: library
-            POSTGRES_USER: laravel
-            POSTGRES_PASSWORD: secret
+            POSTGRES_DB: ${DB_DATABASE}
+            POSTGRES_USER: ${DB_USERNAME}
+            POSTGRES_PASSWORD: ${DB_PASSWORD}
         ports:
             - "5432:5432"
         volumes:

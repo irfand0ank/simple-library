@@ -5,7 +5,7 @@ services:
   # Laravel Application (PHP-FPM)
   # --------------------------------------
   app:
-    image: irfand0ank/mylibrary:latest # ✅ use prebuilt image from GitHub Actions
+    image: irfand0ank/mylibrary:latest
     restart: unless-stopped
     env_file:
       - .env
@@ -22,9 +22,11 @@ services:
     image: postgres:15
     restart: unless-stopped
     environment:
-      POSTGRES_DB: library
-      POSTGRES_USER: laravel
-      POSTGRES_PASSWORD: secret
+      POSTGRES_DB: ${DB_DATABASE}
+      POSTGRES_USER: ${DB_USERNAME}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+    env_file:
+      - .env
     volumes:
       - pg_data:/var/lib/postgresql/data
     networks:
