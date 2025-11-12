@@ -9,8 +9,6 @@ services:
     restart: unless-stopped
     env_file:
       - .env
-    volumes:
-      - app_data:/var/www/html
     depends_on:
       - pgsql
       - redis
