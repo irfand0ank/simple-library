@@ -39,8 +39,33 @@ jobs:
           key: ${{ secrets.SERVER_SSH_KEY }}
           script: |
             cd /var/www/html/my-library
-            git pull origin main || true
-            docker pull ${{ secrets.DOCKER_USERNAME }}/mylibrary:latest
+
+            echo "🔧 Generating .env..."
+            cat > .env <<'EOF'
+            APP_NAME=Laravel
+            APP_ENV=production
+            APP_KEY=${{ secrets.APP_KEY }}
+            APP_DEBUG=false
+            APP_URL=${{ secrets.APP_URL }}
+
+            DB_CONNECTION=pgsql
+            DB_HOST=pgsql
+            DB_PORT=5432
+            DB_DATABASE=${{ secrets.DB_DATABASE }}
+            DB_USERNAME=${{ secrets.DB_USERNAME }}
+            DB_PASSWORD=${{ secrets.DB_PASSWORD }}
+
+            CACHE_DRIVER=redis
+            QUEUE_CONNECTION=redis
+            SESSION_DRIVER=redis
+            SESSION_LIFETIME=120
+            REDIS_HOST=redis
+            REDIS_PORT=6379
+            EOF
+
+            echo "🐳 Deploying the latest image..."
             docker compose -f docker-compose.prod.yml down
-            docker compose -f docker-compose.prod.yml up -d
+            docker compose -f docker-compose.prod.yml up -d --pull always
+
+            echo "🧹 Cleaning up unused images and volumes..."
             docker system prune -f
