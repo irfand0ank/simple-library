@@ -124,7 +124,10 @@ jobs:
             docker compose -f docker-compose.prod.yml down
             docker compose -f docker-compose.prod.yml up -d --pull always
 
-            echo "🔑 Generating Laravel app key..."
+            echo "🚀 Running database migrations..."
+            docker compose exec app php artisan migrate --force
+
+            echo "🧠 Caching configuration..."
             docker compose exec app php artisan config:cache
 
             echo "🧹 Cleaning up..."
